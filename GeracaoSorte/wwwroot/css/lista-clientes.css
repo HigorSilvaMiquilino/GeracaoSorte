@@ -1,0 +1,125 @@
+﻿/* Estilos da Página de Lista de Clientes */
+.clientes-container {
+flex: 1;
+padding: 12rem 1rem 2rem 1rem; 
+display: flex;
+flex-direction: column;
+align-items: center;
+background-color: #f8f9fa;
+}
+
+.clientes-container h1 {
+font-size: 2rem;
+margin-bottom: 1rem;
+text-align: center;
+}
+
+.form-group {
+margin-bottom: 1rem;
+text-align: center;
+}
+
+.form-group label {
+font-size: 1rem;
+margin-right: 0.5rem;
+}
+
+.form-group select {
+padding: 0.5rem;
+font-size: 1rem;
+border: 1px solid #ced4da;
+border-radius: 5px;
+width: 200px;
+}
+
+.error-message {
+color: #dc3545;
+margin-bottom: 1rem;
+text-align: center;
+display: none; 
+}
+
+.btn-primary {
+background-color: #82F74A;
+color: black;
+padding: 0.75rem 1.5rem;
+border: none;
+border-radius: 10px;
+font-size: 1rem;
+font-weight: 600;
+text-decoration: none;
+cursor: pointer;
+transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+text-transform: uppercase;
+letter-spacing: 1px;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover {
+background-color: #6CD936;
+transform: translateY(-2px);
+box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary:active {
+transform: translateY(0);
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.clientes-table-container {
+width: 90%;
+max-width: 1200px;
+margin: 2rem auto 0 auto;
+overflow-x: auto;
+}
+
+.clientes-table {
+width: 100%;
+border-collapse: collapse;
+background-color: white;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+border-radius: 10px;
+overflow: hidden;
+}
+
+.clientes-table th,
+.clientes-table td {
+padding: 1rem;
+text-align: left;
+border-bottom: 1px solid #dee2e6;
+}
+
+.clientes-table th {
+background-color: #343a40;
+color: white;
+font-weight: bold;
+}
+
+.clientes-table tr:nth-child(even) {
+background-color: #f1f3f5;
+}
+
+.clientes-table tr:hover {
+background-color: #e2e6ea;
+}
+
+/* Estilos para mensagens de status */
+.buscaStatus {
+margin-top: 1rem;
+text-align: center;
+padding: 0.75rem;
+border-radius: 8px;
+display: none; 
+}
+
+.buscaStatus.success {
+color: #155724;
+background-color: #d4edda;
+border: 1px solid #c3e6cb;
+}
+
+.buscaStatus.error {
+color: #dc3545;
+background-color: #f8d7da;
+border: 1px solid #f5c2c7;
+}

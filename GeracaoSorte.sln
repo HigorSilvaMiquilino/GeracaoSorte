@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35818.85 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeracaoSorte", "GeracaoSorte\GeracaoSorte.csproj", "{A980A722-C8B3-4AA7-9E62-8F17E0D689B0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A980A722-C8B3-4AA7-9E62-8F17E0D689B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A980A722-C8B3-4AA7-9E62-8F17E0D689B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A980A722-C8B3-4AA7-9E62-8F17E0D689B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A980A722-C8B3-4AA7-9E62-8F17E0D689B0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EFBBD831-B8A7-494B-BA22-55B8ABE9341E}
+	EndGlobalSection
+EndGlobal

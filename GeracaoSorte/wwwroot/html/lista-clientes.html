@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fenix Systems - Lista de clientes</title>
+    <link rel="stylesheet" href="/css/Style.css" />
+    <link rel="stylesheet" href="/css/lista-clientes.css" />
+
+    <script src="/js/carregar-componentes.js" type="module" defer></script>
+    <script src="/js/lista-clientes.js" type="module" defer></script>
+</head>
+<body>
+    <div class="clientes-container">
+        <h1>Lista de Clientes</h1>
+
+        <form id="arquivoForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="arquivo">Selecione o arquivo:</label>
+                <select id="arquivo" name="arquivo">
+                    <option value="">Selecione um arquivo</option>
+                </select>
+            </div>
+            <div class="error-message" id="buscaErrorMessage"></div>
+            <button type="submit" class="btn-primary">Gerar Números da sorte</button>
+        </form>
+        <div id="buscaStatus" class="buscaStatus"></div>
+
+        <div class="clientes-table-container">
+            <table class="clientes-table">
+                <thead>
+                    <tr>
+                        <th>IdCliente</th>
+                        <th>QtdNumSorteRegular</th>
+                        <th>NumerosGerados</th>
+                        <th>Serie</th>
+                        <th>Ordem</th>
+                        <th>NumerosDaSorte</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

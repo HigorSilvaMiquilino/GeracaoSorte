@@ -1,0 +1,32 @@
+﻿# Ignorar pastas de build e dependências
+bin/
+obj/
+.vs/
+.vscode/
+node_modules/
+dist/
+out/
+
+# Ignorar arquivos de usuário específicos do Visual Studio
+*.user
+*.suo
+*.userprefs
+
+# Ignorar arquivos de log e cache
+*.log
+*.cache
+
+# Ignorar arquivos de configuração local
+appsettings.Development.json
+appsettings.Local.json
+
+# Ignorar arquivos de banco de dados local
+*.mdf
+*.ldf
+
+# Ignorar arquivos de ambiente
+.env
+.env.local
+
+# Ignorar arquivos gerados pelo Rider (se usado)
+.idea/

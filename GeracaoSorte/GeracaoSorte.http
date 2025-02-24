@@ -1,0 +1,6 @@
+@GeracaoSorte_HostAddress = http://localhost:5188
+
+GET {{GeracaoSorte_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

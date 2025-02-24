@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fenix Systems - E-mail Carregar</title>
+
+    <link rel="stylesheet" href="/css/Style.css" />
+    <link rel="stylesheet" href="/css/carregar.css" />
+
+    <script src="/js/carregar-componentes.js" type="module" defer></script>
+    <script src="/js/upload.js" type="module" defer></script>
+</head>
+<body>
+    <main>
+        <section class="upload-section">
+            <div class="container">
+                <h2>Upload de Arquivos</h2>
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="fileInput">Selecione um arquivo (CSV, xlsx ou SQL):</label>
+                        <input type="file" id="fileInput" name="file" accept=".csv, .xlsx, .sql" />
+                        <div class="error-message" id="fileErrorMessage"></div>
+                    </div>
+                    <button type="submit" class="btn-primary">Enviar Arquivo</button>
+                </form>
+                <div id="uploadStatus"></div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

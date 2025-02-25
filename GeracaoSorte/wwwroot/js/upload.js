@@ -41,9 +41,15 @@
                     throw new Error('Você não está autorizado. Faça login novamente.');
                 } else if (response.status === 400) {
                     return response.json().then(data => {
+                        console.log(data)
                         throw new Error(data.message || 'Erro ao processar o arquivo.');
                     });
-                } else {
+                } else if (response.status === 500) {
+                    return response.json.then(data => {
+                        throw new Error(data.message || "Erro interno no servidor")
+                    })
+                }   
+                else {
                     throw new Error(`Erro na requisição: ${response.statusText}`);
                 }
             }

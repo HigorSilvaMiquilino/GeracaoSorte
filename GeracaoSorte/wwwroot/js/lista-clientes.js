@@ -49,8 +49,8 @@ document.getElementById('arquivoForm').addEventListener('submit', async function
         }
 
         const data = await response.json();
-        console.log(data);
-        showDisparoSuccess(data.message || 'Clientes buscados com sucesso!');
+        console.log(data.cliente);
+        showDisparoSuccess(data.message || 'Números da sorte gerados com sucesso!');
         preencherTabelaClientes(data.cliente);
     } catch (error) {
         console.error('Erro:', error);
@@ -85,16 +85,20 @@ function preencherTabelaClientes(clientes) {
     tbody.innerHTML = '';
 
     clientes.forEach(cliente => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${cliente.IdCliente}</td>
-            <td>${cliente.QtdNumSorteRegular}</td>
-            <td>${cliente.NumerosGerados}</td>
-            <td>${cliente.Serie}</td>
-            <td>${cliente.Ordem}</td>
-            <td>${cliente.NumerosDaSorte}</td>
-        `;
-        tbody.appendChild(row);
+        const numerosDaSorte = cliente.numerosDaSorte.split(', ');
+
+        numerosDaSorte.forEach((numero, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${index === 0 ? cliente.idCliente : ''}</td>
+                <td>${index === 0 ? cliente.qtdNumSorteRegular : ''}</td>
+                <td>${index === 0 ? cliente.numerosGerados : ''}</td>
+                <td>${index === 0 ? cliente.serie : ''}</td>
+                <td>${index === 0 ? cliente.ordem : ''}</td>
+                <td>${numero}</td>
+            `;
+            tbody.appendChild(row);
+        });
     });
 }
 

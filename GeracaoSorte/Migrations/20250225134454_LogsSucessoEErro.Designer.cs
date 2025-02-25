@@ -4,6 +4,7 @@ using GeracaoSorte.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GeracaoSorte.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250225134454_LogsSucessoEErro")]
+    partial class LogsSucessoEErro
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -342,11 +345,11 @@ namespace GeracaoSorte.Migrations
 
             modelBuilder.Entity("GeracaoSorte.Data.Cliente", b =>
                 {
-                    b.HasOne("GeracaoSorte.Data.ParticipacoesSorte", "ParticipacoesSorte")
+                    b.HasOne("GeracaoSorte.Data.ParticipacoesSorte", "Promocao")
                         .WithMany()
                         .HasForeignKey("ParticipacoesSorteId");
 
-                    b.Navigation("ParticipacoesSorte");
+                    b.Navigation("Promocao");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

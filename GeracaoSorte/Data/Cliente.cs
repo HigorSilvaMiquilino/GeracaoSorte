@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
 
-        public ParticipacoesSorte Promocao { get; set; }
+        public ParticipacoesSorte ParticipacoesSorte { get; set; }
 
         public int? ParticipacoesSorteId { get; set; }
 

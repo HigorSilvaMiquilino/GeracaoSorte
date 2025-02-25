@@ -15,5 +15,9 @@ namespace GeracaoSorte.Data
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<ParticipacoesSorte> ParticipacoesSorte { get; set; }
 
+        public DbSet<LogErro> LogsErro { get; set; }
+
+        public DbSet<LogSucesso> LogsSucesso { get; set; }
+
     }
 }

@@ -153,21 +153,11 @@ namespace GeracaoSorte.Services.Clientes
             var random = new Random();
             var stopwatch = Stopwatch.StartNew();
 
-<<<<<<< HEAD
-   
-=======
-            int quantidadeGerada = await RecuperarProgresso(idCliente);
->>>>>>> 37d7bf77bdde47fac2d27906ce3256958304b7bd
-
-
             try
             {
 
-<<<<<<< HEAD
+
                 await Parallel.ForEachAsync(Enumerable.Range(0,quantidade), async (i, cancellationToken) =>
-=======
-                await Parallel.ForEachAsync(Enumerable.Range(quantidadeGerada, quantidade - quantidadeGerada), async (i, cancellationToken) =>
->>>>>>> 37d7bf77bdde47fac2d27906ce3256958304b7bd
                 {
                     using (var context = new ApplicationDbContext(_dbContextOptions))
                     {
@@ -216,15 +206,6 @@ namespace GeracaoSorte.Services.Clientes
                                 numerosGerados.Add(numeroSorte);
                                 contagemPorSerie.AddOrUpdate(serie, 1, (key, oldValue) => oldValue + 1);
 
-<<<<<<< HEAD
-
-=======
-                                quantidadeGerada++;
-                                if (quantidadeGerada % 1000 == 0)
-                                {
-                                    await SalvarProgresso(idCliente, quantidadeGerada);
-                                }
->>>>>>> 37d7bf77bdde47fac2d27906ce3256958304b7bd
 
                                 break;
                             }
@@ -255,7 +236,6 @@ namespace GeracaoSorte.Services.Clientes
                 await _context.SaveChangesAsync();
             }
             stopwatch.Stop();
-            await SalvarProgresso(idCliente, quantidadeGerada);
             return participacoes.ToList();
         }
         public async Task SalvarClientesComNumeros(List<ClienteComNumeros> clientes)
@@ -296,40 +276,5 @@ namespace GeracaoSorte.Services.Clientes
                 await _context.SaveChangesAsync();
             }
         }
-<<<<<<< HEAD
-=======
-
-        public async Task SalvarProgresso(int idCliente, int quantidadeGerada)
-        {
-            var progresso = await _context.ProgressoGeracoes
-                .FirstOrDefaultAsync(p => p.IdCliente == idCliente);
-
-            if (progresso == null)
-            {
-                progresso = new ProgressoGeracao
-                {
-                    IdCliente = idCliente,
-                    QuantidadeGerada = quantidadeGerada,
-                    UltimaAtualizacao = DateTime.Now
-                };
-                _context.ProgressoGeracoes.Add(progresso);
-            }
-            else
-            {
-                progresso.QuantidadeGerada = quantidadeGerada;
-                progresso.UltimaAtualizacao = DateTime.Now;
-            }
-
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task<int> RecuperarProgresso(int idCliente)
-        {
-            var progresso = await _context.ProgressoGeracoes
-                .FirstOrDefaultAsync(p => p.IdCliente == idCliente);
-
-            return progresso?.QuantidadeGerada ?? 0;
-        }
->>>>>>> 37d7bf77bdde47fac2d27906ce3256958304b7bd
     }
 }

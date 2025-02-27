@@ -20,5 +20,7 @@ namespace GeracaoSorte.Data
 
         public DbSet<LogSucesso> LogsSucesso { get; set; }
 
+        public DbSet<ProgressoGeracao> ProgressoGeracoes { get; set; }
+
     }
 }

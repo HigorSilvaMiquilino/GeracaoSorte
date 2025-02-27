@@ -48,7 +48,7 @@
                     return response.json.then(data => {
                         throw new Error(data.message || "Erro interno no servidor")
                     })
-                }   
+                } 
                 else {
                     throw new Error(`Erro na requisição: ${response.statusText}`);
                 }

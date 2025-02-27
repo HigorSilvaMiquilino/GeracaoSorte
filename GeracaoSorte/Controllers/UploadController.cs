@@ -325,6 +325,7 @@ namespace GeracaoSorte.Controllers
             return Ok(new { success = true, message = "Arquivo processado com sucesso!" });
         }
 
+        /*
         [HttpPost("UploadSql")]
         public async Task<IActionResult> UploadSql(IFormFile file)
         {
@@ -408,5 +409,6 @@ namespace GeracaoSorte.Controllers
                 return StatusCode(500, new { success = false, message = $"Erro interno no servidor: {ex.Message}" });
             }
         }
+        */
     }
 }

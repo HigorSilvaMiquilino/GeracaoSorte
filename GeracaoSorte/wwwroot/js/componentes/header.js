@@ -17,6 +17,7 @@
                     <li><a href="/html/index.html">Funcionalidades</a></li>
                     <li><a href="/html/carregar.html">Carregar</a></li>
                     <li><a href="/html/lista-clientes.html">Lista de clientes</a></li>
+                    <li><a href="/html/estatistica.html">Estatísticas</a></li>
                 </ul>
             </div>
         </nav>

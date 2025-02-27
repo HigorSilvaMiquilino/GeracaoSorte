@@ -7,9 +7,11 @@ async function carregarArquivos() {
     try {
         const response = await fetch('https://localhost:7017/api/Clientes/ArquivoNome');
 
-        if (!response.ok) {
+        if (response.status === 404) {
+            throw new Error('Nenhum arquivo encontrado.');
+        } else if (!response.ok) {
             throw new Error('Erro ao carregar arquivos.');
-        }
+        } 
 
         const arquivos = await response.json();
         console.log(arquivos);
@@ -27,7 +29,7 @@ async function carregarArquivos() {
         showDisparoSuccess(arquivos.message);
     } catch (error) {
         console.error('Erro:', error);
-        showDisparoError('Erro ao carregar arquivos. Tente novamente.');
+        showDisparoError(error);
     }
 }
 
@@ -87,14 +89,14 @@ function preencherTabelaClientes(clientes) {
     clientes.forEach(cliente => {
         const numerosDaSorte = cliente.numerosDaSorte.split(', ');
 
-        numerosDaSorte.forEach((numero, index) => {
+        numerosDaSorte.forEach((numero) => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${index === 0 ? cliente.idCliente : ''}</td>
-                <td>${index === 0 ? cliente.qtdNumSorteRegular : ''}</td>
-                <td>${index === 0 ? cliente.numerosGerados : ''}</td>
-                <td>${index === 0 ? cliente.serie : ''}</td>
-                <td>${index === 0 ? cliente.ordem : ''}</td>
+                <td>${cliente.idCliente}</td>
+                <td>${cliente.qtdNumSorteRegular}</td>
+                <td>${cliente.numerosGerados}</td>
+                <td>${cliente.serie}</td>
+                <td>${cliente.ordem}</td>
                 <td>${numero}</td>
             `;
             tbody.appendChild(row);

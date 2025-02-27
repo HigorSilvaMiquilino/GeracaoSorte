@@ -86,7 +86,9 @@ function preencherTabelaClientes(clientes) {
     const tbody = document.querySelector('.clientes-table tbody');
     tbody.innerHTML = '';
 
-    clientes.forEach(cliente => {
+    const primeirosClientes = clientes.slice(0, 10);
+
+    primeirosClientes.forEach(cliente => {
         const numerosDaSorte = cliente.numerosDaSorte.split(', ');
 
         numerosDaSorte.forEach((numero) => {

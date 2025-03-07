@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
@@ -170,6 +171,8 @@ namespace GeracaoSorte.Controllers
                             var colunasEsperadas = new[] { "idCliente", "QtdNumSorteRegular" };
                             var colunasDeFato = new List<string>();
 
+                            var stopwatch = Stopwatch.StartNew();
+
                             for (int col = 1; col <= worksheet.Dimension.End.Column; col++)
                             {
                                 var nomeColuna = worksheet.Cells[1, col].Text;
@@ -281,6 +284,8 @@ namespace GeracaoSorte.Controllers
 
                             await _context.SaveChangesAsync();
 
+                            stopwatch.Stop();
+                            Console.WriteLine($"Tempo de processamento do arquivo Excel: {stopwatch.ElapsedMilliseconds}ms");
                             return Ok(new { success = true, message = "Arquivo processado com sucesso!" });
                         }
                     }

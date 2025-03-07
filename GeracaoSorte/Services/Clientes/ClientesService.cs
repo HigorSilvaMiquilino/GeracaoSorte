@@ -1,4 +1,7 @@
-﻿using GeracaoSorte.Data;
+﻿using EFCore.BulkExtensions;
+using GeracaoSorte.Data;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -11,6 +14,8 @@ namespace GeracaoSorte.Services.Clientes
     {
         private readonly ApplicationDbContext _context;
         private readonly DbContextOptions<ApplicationDbContext> _dbContextOptions;
+       
+
 
         public ClientesService(ApplicationDbContext context, DbContextOptions<ApplicationDbContext> dbContextOptions)
         {
@@ -40,21 +45,17 @@ namespace GeracaoSorte.Services.Clientes
                 }
 
                 var resultados = new List<ClienteComNumeros>();
+                var todaParticipacoes = new List<ParticipacoesSorte>();
+                var todosPares = new HashSet<string>();
+
+                var stopwatch = Stopwatch.StartNew();
 
                 foreach (var cliente in clientes)
                 {
                     try
                     {
-                        var numerosGerados = await GerarNumerosSorte(cliente.QtdNumSorteRegular, cliente.idCliente);
-
-                        using (var transaction = await _context.Database.BeginTransactionAsync())
-                        {
-                            try
-                            {
-
-                                await _context.ParticipacoesSorte.AddRangeAsync(numerosGerados);
-                                await _context.SaveChangesAsync();
-
+                        var numerosGerados = await GerarNumerosSorte(cliente.QtdNumSorteRegular, cliente.idCliente, todosPares);
+                        todaParticipacoes.AddRange(numerosGerados);
 
                                 foreach (var numero in numerosGerados)
                                 {
@@ -72,23 +73,7 @@ namespace GeracaoSorte.Services.Clientes
                                         Ordem = numero.Ordem,
                                         NumerosDaSorte = string.Join(", ", numerosFormatados)
                                     });
-                                }
-
-                                await transaction.CommitAsync();
-                            }
-                            catch (Exception ex)
-                            {
-                                await transaction.RollbackAsync();
-                                _context.LogsErro.Add(new LogErro
-                                {
-                                    DataErro = DateTime.Now,
-                                    MensagemErro = $"Erro ao gerar números da sorte para o cliente {cliente.idCliente}: {ex.Message}",
-                                    StackTrace = ex.StackTrace,
-                                    Status = "Erro"
-                                });
-                                await _context.SaveChangesAsync();
-                            }
-                        }
+                                }                  
                     }
                     catch (Exception ex)
                     {
@@ -102,14 +87,40 @@ namespace GeracaoSorte.Services.Clientes
                         await _context.SaveChangesAsync();
                     }
                 }
-                resultados = resultados.
-                    OrderBy(c => c.IdCliente)
-                    .ThenBy(s => s.Serie)
-                    .ToList();
 
-                await SalvarClientesComNumeros(resultados);
+                stopwatch.Stop();
+                long timeElapsed = stopwatch.ElapsedMilliseconds;
 
-                return resultados;
+                using (var transaction = await _context.Database.BeginTransactionAsync())
+                {
+                    try
+                    {
+                        stopwatch.Restart();
+                        await _context.BulkInsertAsync(todaParticipacoes);
+                        await SalvarClientesComNumeros(resultados);
+                        await transaction.CommitAsync();
+                        stopwatch.Stop();
+                        Console.WriteLine($"Tempo total para Gerar Números da sorte: {timeElapsed} ms");
+                        Console.WriteLine($"Tempo total para salvar no banco: {stopwatch.ElapsedMilliseconds} ms");
+
+                    }
+                    catch (Exception ex)
+                    {
+                        await transaction.RollbackAsync();
+                        var sqlException = ex.InnerException as SqlException;
+                        _context.LogsErro.Add(new LogErro
+                        {
+                            DataErro = DateTime.Now,
+                            MensagemErro = $"Erro ao salvar clientes com números:  {ex.Message}" +
+                       (sqlException != null ? $" SQL Error: {sqlException.Number} - {sqlException.Message}" : ""),
+                            StackTrace = ex.StackTrace,
+                            Status = "Erro"
+                        });
+                        await _context.SaveChangesAsync();
+                    }
+                }
+
+                return resultados.OrderBy(c => c.IdCliente).ThenBy(s => s.Serie).ToList();
             }
             catch (Exception ex)
             {
@@ -135,80 +146,71 @@ namespace GeracaoSorte.Services.Clientes
         }
 
 
-        public async Task<List<ParticipacoesSorte>> GerarNumerosSorte(int quantidade, int idCliente)
+        public async Task<List<ParticipacoesSorte>> GerarNumerosSorte(int quantidade, int idCliente, HashSet<string> todosPares)
         {
-            var participacoes = new ConcurrentBag<ParticipacoesSorte>();
-            var numerosGerados = new ConcurrentBag<string>();
+            var participacoes = new List<ParticipacoesSorte>();
+            var random = new Random();
             var contagemPorSerie = new ConcurrentDictionary<string, int>();
 
-
             for (int i = 0; i < 100; i++)
-            {
                 contagemPorSerie[i.ToString("D2")] = 0;
-            }
 
             double mediaPorSerie = quantidade / 100.0;
             double limiteSuperior = mediaPorSerie * 1.05;
 
-            var random = new Random();
-            var stopwatch = Stopwatch.StartNew();
 
             try
             {
-
-
-                await Parallel.ForEachAsync(Enumerable.Range(0,quantidade), async (i, cancellationToken) =>
-                {
                     using (var context = new ApplicationDbContext(_dbContextOptions))
                     {
-                        while (true)
+                        while (participacoes.Count < quantidade)
                         {
                             try
                             {
-                                string serie = random.Next(0, 100).ToString("D2");
-                                string ordem = random.Next(0, 100000).ToString("D5");
-                                string numeroSorte = $"{serie}-{ordem}";
-
-                                if (numerosGerados.Contains(numeroSorte))
+                            var candidato = new List<(string Serie, string Ordem)>();
+                            for (int i = 0; i < Math.Min(1000, quantidade - participacoes.Count); i++)
+                            {
+                                var serie = random.Next(0, 100).ToString("D2");
+                                var ordem = random.Next(0, 100000).ToString("D2");
+                                if (contagemPorSerie[serie] < limiteSuperior)
                                 {
-                                    continue;
+                                    candidato.Add((serie, ordem));
                                 }
-
-                                bool numeroExisteNoBanco = await context.ParticipacoesSorte
-                                    .AnyAsync(p => p.Serie == serie && p.Ordem == ordem, cancellationToken);
-
-                                if (numeroExisteNoBanco)
-                                {
-                                    continue;
-                                }
-
-                                bool clienteJaTemNumero = await context.ClienteComNumeros
-                                    .AnyAsync(c => c.Serie == serie && c.Ordem == ordem, cancellationToken);
-
-                                if (clienteJaTemNumero)
-                                {
-                                    continue;
-                                }
-
-                                if (contagemPorSerie[serie] >= limiteSuperior)
-                                {
-                                    continue;
-                                }
-
-                                participacoes.Add(new ParticipacoesSorte
-                                {
-                                    Serie = serie,
-                                    Ordem = ordem,
-                                    DataCreate = DateTime.Now,
-                                    Cliente = idCliente
-                                });
-
-                                numerosGerados.Add(numeroSorte);
-                                contagemPorSerie.AddOrUpdate(serie, 1, (key, oldValue) => oldValue + 1);
-
-
-                                break;
                             }
+
+                            var series = candidato.Select(c => c.Serie).Distinct().ToList();
+                            var ordens = candidato.Select(c => c.Ordem).ToList();
+                            var participacoesExistentes = await context.ParticipacoesSorte
+                                .Where(p => series.Contains(p.Serie) && ordens.Contains(p.Ordem))
+                                .Select(p => new { p.Serie, p.Ordem })
+                                .ToListAsync();
+
+                            var clientesExistentes = await context.ClienteComNumeros
+                                .Where(c => series.Contains(c.Serie) && ordens.Contains(c.Ordem))
+                                .Select(c => new { c.Serie, c.Ordem })
+                                .ToListAsync();
+
+                            var existeSet = participacoesExistentes.Concat(clientesExistentes)
+                                .Select(p => $"{p.Serie}-{p.Ordem}")
+                                .ToHashSet();
+
+                            foreach (var (serie, ordem) in candidato)
+                            {
+                                if(!existeSet.Contains($"{serie}-{ordem}") && contagemPorSerie[serie] < limiteSuperior && !todosPares.Contains($"{serie}-{ordem}"))
+                                { 
+                                    participacoes.Add(new ParticipacoesSorte
+                                    {
+                                        Serie = serie,
+                                        Ordem = ordem,
+                                        DataCreate = DateTime.Now,
+                                        Cliente = idCliente
+                                    });
+                                    contagemPorSerie.AddOrUpdate(serie, 1, (key, value) => value + 1); 
+                                    todosPares.Add($"{serie}-{ordem}");
+                                }
+                            }
+
+                        }
                             catch (Exception ex)
                             {
                                 _context.LogsErro.Add(new LogErro
@@ -222,7 +224,7 @@ namespace GeracaoSorte.Services.Clientes
                             }
                         }
                     }
-                });
+                return participacoes;
             }
             catch (Exception ex)
             {
@@ -235,24 +237,23 @@ namespace GeracaoSorte.Services.Clientes
                 });
                 await _context.SaveChangesAsync();
             }
-            stopwatch.Stop();
+
             return participacoes.ToList();
         }
+
         public async Task SalvarClientesComNumeros(List<ClienteComNumeros> clientes)
         {
             try
             {
-                using (var transaction = await _context.Database.BeginTransactionAsync())
-                {
+
                     try
                     {
                         await _context.ClienteComNumeros.AddRangeAsync(clientes);
                         await _context.SaveChangesAsync();
-                        await transaction.CommitAsync();
+
                     }
                     catch (Exception ex)
                     {
-                        await transaction.RollbackAsync();
                         _context.LogsErro.Add(new LogErro
                         {
                             DataErro = DateTime.Now,
@@ -262,7 +263,7 @@ namespace GeracaoSorte.Services.Clientes
                         });
                         await _context.SaveChangesAsync();
                     }
-                }
+                
             }
             catch (Exception ex)
             {
